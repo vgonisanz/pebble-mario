@@ -1,0 +1,56 @@
+{
+  "uuid": "596eca4f-bc7e-46ac-aca2-4a7dfea2928a",
+  "shortName": "mymario",
+  "longName": "mymario",
+  "companyName": "MakeAwesomeHappen",
+  "versionLabel": "1.0",
+  "sdkVersion": "3",
+  "targetPlatforms": ["aplite", "basalt", "chalk"],
+  "enableMultiJS": true,
+  "watchapp": {
+    "watchface": true
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources":
+  {
+    "media":
+    [
+      {
+          "file": "images/example.png",
+          "name": "IMAGE_EXAMPLE",
+          "targetPlatforms": null,
+          "type": "bitmap"
+      },
+      {
+          "characterRegex": "[,0-9A-Z]",
+          "file": "fonts/emulogic.ttf",
+          "name": "FONT_EMULOGIC_8",
+          "type": "font"
+      },
+      {
+          "characterRegex": "[,0-9A-Z]",
+          "file": "fonts/C64_Pro_Mono-STYLE.ttf",
+          "name": "FONT_C64",
+          "type": "font"
+      },
+      {
+          "characterRegex": "[0-9]",
+          "file": "fonts/Gamegirl.ttf",
+          "name": "FONT_GAMEGIRL_24",
+          "type": "font"
+      },
+      {
+          "file": "images/mario-jump-bw.png",
+          "name": "IMAGE_MARIO_JUMP",
+          "type": "bitmap"
+      },
+      {
+          "file": "images/mario-normal-bw.png",
+          "name": "IMAGE_MARIO_NORMAL",
+          "type": "bitmap"
+      }
+    ]
+  }
+}
