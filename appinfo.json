@@ -30,12 +30,6 @@
           "type": "font"
       },
       {
-          "characterRegex": "[,0-9A-Z]",
-          "file": "fonts/C64_Pro_Mono-STYLE.ttf",
-          "name": "FONT_C64",
-          "type": "font"
-      },
-      {
           "characterRegex": "[0-9]",
           "file": "fonts/Gamegirl.ttf",
           "name": "FONT_GAMEGIRL_24",
