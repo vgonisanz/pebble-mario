@@ -44,6 +44,11 @@
           "file": "images/mario-normal-bw.png",
           "name": "IMAGE_MARIO_NORMAL",
           "type": "bitmap"
+      },
+      {
+          "file": "images/mario_block_48_bw.png",
+          "name": "IMAGE_BLOCK",
+          "type": "bitmap"
       }
     ]
   }

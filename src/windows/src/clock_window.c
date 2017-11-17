@@ -12,6 +12,7 @@
 #include "date_layer.h"
 #include "time_layer.h"
 #include "character_layer.h"
+#include "block_layer.h"
 
 #define LOG_TAG "ClockWindow"
 #include "logger.h"
@@ -91,6 +92,9 @@ Clock_window_config get_window_configuration(Cw_config_type type)
   return configuration;
 }
 
+/* TODO move to configuration */
+#define BLOCK_SIZE 50
+
 static void create_layers()
 {
   // Variables needed
@@ -101,12 +105,14 @@ static void create_layers()
   // Create layer pointers
   Layer* background_layer = background_create(RESOURCE_ID_IMAGE_EXAMPLE, GRect(0, 0, screen_size_x, screen_size_y));
   TextLayer* date_layer = date_create(font_small, GRect(0, 0, bounds.size.w, 20));
+  Layer* block_layer = block_create(RESOURCE_ID_IMAGE_BLOCK, GRect(22 + offset_x, 25 + offset_y, BLOCK_SIZE*2, BLOCK_SIZE + 4));
   Layer* time_layer = time_create(font_main, config.time_config);
   Layer* character_layer = character_create(RESOURCE_ID_IMAGE_MARIO_NORMAL, config.character_config);
 
   // Add layers to structure
   layer_add_child(window_layer, background_layer);
   layer_add_child(window_layer, text_layer_get_layer(date_layer));
+  layer_add_child(background_layer, block_layer);
   layer_add_child(background_layer, time_layer);
   layer_add_child(background_layer, character_layer);
 }
@@ -117,6 +123,7 @@ static void destroy_layers()
   background_destroy();
   date_destroy();
   character_destroy();
+  block_destroy();
 }
 /***********************************
 *       Handlers                  *
