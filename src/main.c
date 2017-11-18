@@ -42,14 +42,10 @@ static void init(void)
   };
   //init_theme_manager(themes, NUMBER_OF_THEMES);
 
-  // Use a predefined configuration, you can edit your own
-  Clock_window_config config;
-  config = get_window_configuration(CW_NORMAL);
-
   // Init combo
   clock_init(SECOND_UNIT);
   load_fonts();
-  clock_window_create(config);
+  clock_window_create(CLK_NORMAL_CONFIGURATION);
 }
 
 static void deinit(void)

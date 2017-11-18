@@ -42,13 +42,9 @@ typedef struct clock_window_config
   Time_config time_config;
   Character_config character_config;
 
-} Clock_window_config;
+  int block_size;
+  GRect block_rect;
 
-/* Type configuration, determine values predeterminated */
-typedef enum cw_config_type
-{
-  CW_NORMAL = 0,
-  CW_SIMPLE
-} Cw_config_type;
+} Clock_window_config;
 
 #endif /* VGONI_APPCONFIG_WINDOW_H */

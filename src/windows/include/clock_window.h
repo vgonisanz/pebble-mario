@@ -13,6 +13,11 @@
 /**********
 * Defines *
 **********/
+enum clock_configuration
+{
+  CLK_NORMAL_CONFIGURATION = 0,
+  CLK_SIMPLE_CONFIGURATION = 1,
+};
 
 /***********************************
 * Variables declaration   *
@@ -25,18 +30,11 @@
  * @brief Create app.
  * @description Initialize internal memory, window, and add all patterns to process
  */
-void clock_window_create(Clock_window_config customConfig);
+void clock_window_create(enum clock_configuration);
 /**
  * @brief Destroy window.
  * @description Initialize internal memory, window, and add all patterns to process
  */
 void clock_window_destroy();
-/**
- * @brief Create a template of configuration.
- * @description According type of pebble, configure using different parameters.
- * You can create your own configuration by yourself.
- * @param[out] A configuration according device
- */
-Clock_window_config get_window_configuration(Cw_config_type type);
 
 #endif /* VGONI_CLOCK_WINDOW_H */

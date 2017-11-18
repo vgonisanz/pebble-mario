@@ -18,15 +18,16 @@
 #include "logger.h"
 
 // Private data
-static Clock_window_config config;  // TODO check if can avoid store this
+#define NUMBER_OF_CONFIGURATIONS 2
+
+static Clock_window_config configurations[NUMBER_OF_CONFIGURATIONS];
+static int current_conf_index = 0;
 
 static Window *window = NULL;
 static Layer *window_layer = NULL;
 
 // Declarations
-static Clock_window_config get_wc_normal();
-static Clock_window_config get_wc_simple();
-
+static void initialize_configs();
 static void create_layers();
 static void destroy_layers();
 
@@ -49,10 +50,11 @@ static void update_second_callback();
 static void update_minute_callback();
 
 // Definitions
-void clock_window_create(Clock_window_config customConfig)
+void clock_window_create(enum clock_configuration configuration_index)
 {
   LOGD("Creating window...");
-  config = customConfig;
+  initialize_configs();
+  current_conf_index = configuration_index;
 
   window = window_create();
   window_set_click_config_provider(window, click_config_provider);
@@ -74,26 +76,49 @@ void clock_window_destroy()
   LOGD("Windows destroyed!");
 }
 
-Clock_window_config get_window_configuration(Cw_config_type type)
+static void initialize_configs()
 {
-  Clock_window_config configuration;
-  switch(type)
-  {
-    case CW_NORMAL:
-      configuration = get_wc_normal();
-      break;
-    case CW_SIMPLE:
-      configuration = get_wc_simple();
-      break;
-    default:
-      configuration = get_wc_normal();
-      break;
-  }
-  return configuration;
-}
+    // Config 0 - normal configurations[CLK_NORMAL_CONFIGURATION]
+    configurations[CLK_NORMAL_CONFIGURATION].time_config.timeRect = GRect(screen_size_x /2 - 50, screen_size_y/4, 100, 50);
+    configurations[CLK_NORMAL_CONFIGURATION].time_config.timeTextShadow = GColorBlack;
+    configurations[CLK_NORMAL_CONFIGURATION].time_config.timeTextColor = GColorBulgarianRose;
+    configurations[CLK_NORMAL_CONFIGURATION].time_config.timeOverflow = GTextOverflowModeTrailingEllipsis;
+    configurations[CLK_NORMAL_CONFIGURATION].time_config.timeAlignment = GTextAlignmentLeft;
+    configurations[CLK_NORMAL_CONFIGURATION].time_config.timeAttributes = NULL;
+    configurations[CLK_NORMAL_CONFIGURATION].time_config.timeInitialOffsetX = 3;
+    configurations[CLK_NORMAL_CONFIGURATION].time_config.timeInitialOffsetY = 1;
+    configurations[CLK_NORMAL_CONFIGURATION].time_config.timeSpaceOffsetX = 20;
+    configurations[CLK_NORMAL_CONFIGURATION].time_config.timeBigSpaceOffsetX = 30;
+    configurations[CLK_NORMAL_CONFIGURATION].time_config.timeShadowOffsetX = 4;
+    configurations[CLK_NORMAL_CONFIGURATION].time_config.timeShadowOffsetY = 1;
 
-/* TODO move to configuration */
-#define BLOCK_SIZE 50
+    // Character
+    // GROUND_HEIGHT = 26
+    configurations[CLK_NORMAL_CONFIGURATION].character_config.initialRect = GRect(32 + 15 + offset_x, 168-26-76 + 28 + 10 + offset_y, 80, 80);
+    configurations[CLK_NORMAL_CONFIGURATION].character_config.finalRect = GRect(32 + 15 + offset_x, 50 + 4 + 10 + offset_y, 80, 80);
+
+    configurations[CLK_NORMAL_CONFIGURATION].block_size = 50;
+    configurations[CLK_NORMAL_CONFIGURATION].block_rect = GRect(22 + offset_x, 32 + offset_y, configurations[CLK_NORMAL_CONFIGURATION].block_size*2, configurations[CLK_NORMAL_CONFIGURATION].block_size);
+
+    // // Config 1 - simple configurations[CLK_SIMPLE_CONFIGURATION] TODO
+    // configurations[CLK_SIMPLE_CONFIGURATION].time_config.timeRect = GRect(screen_size_x /2 - 50, screen_size_y /2 - 25, 100, 50);
+    // configurations[CLK_SIMPLE_CONFIGURATION].time_config.timeTextShadow = GColorBlack;
+    // configurations[CLK_SIMPLE_CONFIGURATION].time_config.timeTextColor = GColorBulgarianRose;
+    // configurations[CLK_SIMPLE_CONFIGURATION].time_config.timeOverflow = GTextOverflowModeTrailingEllipsis;
+    // configurations[CLK_SIMPLE_CONFIGURATION].time_config.timeAlignment = GTextAlignmentLeft;
+    // configurations[CLK_SIMPLE_CONFIGURATION].time_config.timeAttributes = NULL;
+    // configurations[CLK_SIMPLE_CONFIGURATION].time_config.timeInitialOffsetX = 3;
+    // configurations[CLK_SIMPLE_CONFIGURATION].time_config.timeInitialOffsetY = 1;
+    // configurations[CLK_SIMPLE_CONFIGURATION].time_config.timeSpaceOffsetX = 20;
+    // configurations[CLK_SIMPLE_CONFIGURATION].time_config.timeBigSpaceOffsetX = 30;
+    // configurations[CLK_SIMPLE_CONFIGURATION].time_config.timeShadowOffsetX = 4;
+    // configurations[CLK_SIMPLE_CONFIGURATION].time_config.timeShadowOffsetY = 1;
+    //
+    // // Character
+    // // GROUND_HEIGHT = 26
+    // configurations[CLK_SIMPLE_CONFIGURATION].character_config.initialRect = GRect(32 + 15 + offset_x, 168-26-76 + 28 + 10 + offset_y, 80, 80);
+    // configurations[CLK_SIMPLE_CONFIGURATION].character_config.finalRect = GRect(32 + 15 + offset_x, 50 + 4 + 10 + offset_y, 80, 80);
+}
 
 static void create_layers()
 {
@@ -105,9 +130,9 @@ static void create_layers()
   // Create layer pointers
   Layer* background_layer = background_create(RESOURCE_ID_IMAGE_EXAMPLE, GRect(0, 0, screen_size_x, screen_size_y));
   TextLayer* date_layer = date_create(font_small, GRect(0, 0, bounds.size.w, 20));
-  Layer* block_layer = block_create(RESOURCE_ID_IMAGE_BLOCK, GRect(22 + offset_x, 25 + offset_y, BLOCK_SIZE*2, BLOCK_SIZE + 4));
-  Layer* time_layer = time_create(font_main, config.time_config);
-  Layer* character_layer = character_create(RESOURCE_ID_IMAGE_MARIO_NORMAL, config.character_config);
+  Layer* block_layer = block_create(RESOURCE_ID_IMAGE_BLOCK, configurations[current_conf_index].block_rect);
+  Layer* time_layer = time_create(font_main, configurations[current_conf_index].time_config);
+  Layer* character_layer = character_create(RESOURCE_ID_IMAGE_MARIO_NORMAL, configurations[current_conf_index].character_config);
 
   // Add layers to structure
   layer_add_child(window_layer, background_layer);
@@ -189,63 +214,4 @@ static void window_unload_callback(Window *window)
 {
   LOGD("window_unload_callback");
   clock_window_destroy(); //< Auto destroy elements
-}
-
-Clock_window_config get_wc_normal()
-{
-  Clock_window_config configuration;
-  // BLOCK_SIZE = 50
-  //GRect(0, BLOCK_SIZE + 4 + 5, BLOCK_SIZE*2, BLOCK_SIZE);
-
-  // GRect(0, 50 + 4 + 5, 50*2, 50)
-  // Time
-  //configuration.timeRect = GRect(0, 50 + 4 + 5, 50*2, 50);
-  configuration.time_config.timeRect = GRect(screen_size_x /2 - 50, screen_size_y/4, 100, 50);
-  configuration.time_config.timeTextShadow = GColorBlack;
-  configuration.time_config.timeTextColor = GColorBulgarianRose;
-  configuration.time_config.timeOverflow = GTextOverflowModeTrailingEllipsis;
-  configuration.time_config.timeAlignment = GTextAlignmentLeft;
-  configuration.time_config.timeAttributes = NULL;
-  configuration.time_config.timeInitialOffsetX = 3;
-  configuration.time_config.timeInitialOffsetY = 1;
-  configuration.time_config.timeSpaceOffsetX = 20;
-  configuration.time_config.timeBigSpaceOffsetX = 30;
-  configuration.time_config.timeShadowOffsetX = 4;
-  configuration.time_config.timeShadowOffsetY = 1;
-
-  // Character
-  // GROUND_HEIGHT = 26
-  configuration.character_config.initialRect = GRect(32 + 15 + offset_x, 168-26-76 + 28 + 10 + offset_y, 80, 80);
-  configuration.character_config.finalRect = GRect(32 + 15 + offset_x, 50 + 4 + 10 + offset_y, 80, 80);
-
-  return configuration;
-}
-
-Clock_window_config get_wc_simple()
-{
-  Clock_window_config configuration;
-  // BLOCK_SIZE = 50
-  //GRect(0, BLOCK_SIZE + 4 + 5, BLOCK_SIZE*2, BLOCK_SIZE);
-
-  // GRect(0, 50 + 4 + 5, 50*2, 50)
-  // Time
-  //configuration.timeRect = GRect(0, 50 + 4 + 5, 50*2, 50);
-  configuration.time_config.timeRect = GRect(screen_size_x /2 - 50, screen_size_y /2 - 25, 100, 50);
-  configuration.time_config.timeTextShadow = GColorBlack;
-  configuration.time_config.timeTextColor = GColorBulgarianRose;
-  configuration.time_config.timeOverflow = GTextOverflowModeTrailingEllipsis;
-  configuration.time_config.timeAlignment = GTextAlignmentLeft;
-  configuration.time_config.timeAttributes = NULL;
-  configuration.time_config.timeInitialOffsetX = 3;
-  configuration.time_config.timeInitialOffsetY = 1;
-  configuration.time_config.timeSpaceOffsetX = 20;
-  configuration.time_config.timeBigSpaceOffsetX = 30;
-  configuration.time_config.timeShadowOffsetX = 4;
-  configuration.time_config.timeShadowOffsetY = 1;
-
-  // Character
-  // GROUND_HEIGHT = 26
-  configuration.character_config.initialRect = GRect(32 + 15 + offset_x, 168-26-76 + 28 + 10 + offset_y, 80, 80);
-  configuration.character_config.finalRect = GRect(32 + 15 + offset_x, 50 + 4 + 10 + offset_y, 80, 80);
-  return configuration;
 }
